@@ -1,6 +1,5 @@
-OBJS = main.cpp
+BINARY = PLAY
+OBJS = src/*.cpp
 
-OBJ_NAME = main
-
-compile:
-	g++ $(OBJS) -w -lSDL2 -o $(OBJ_NAME)
+generator:
+	g++ $(OBJS) -o $(BINARY)
