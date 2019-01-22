@@ -1,23 +1,22 @@
 #ifndef GAME_DEF_
 #define GAME_DEF_
 #include "main.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
+
 class Game {
-private:
-    bool is_running;
-    
-public:
-    Game() {
+    private:
+        bool is_running;
+        SDL_Window *window;
+        SDL_Renderer *renderer;
+    public:
+        Game();
+        ~Game();
 
-    }
-    void init(const char *title, int x_pos, int y_pos, int width, int height, bool full_screen);
-    void update();
-    void render();
-    void handelEvents();
-    void clean();
+        void Init(const char *title, int x_pos, int y_pos, int width, int height, bool fullscreen);
+        void Update();
+        void Render();
+        void HandelEvents();
+        void Clean();
 
-    bool running();
+        bool Running();
 };
 #endif //GAME_DEF_

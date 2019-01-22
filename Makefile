@@ -2,4 +2,5 @@ BINARY = PLAY
 OBJS = src/*.cpp
 
 generator:
-	g++ $(OBJS) -o $(BINARY)
+	g++ $(OBJS) -lSDL2 -o $(BINARY)
+	./PLAY
