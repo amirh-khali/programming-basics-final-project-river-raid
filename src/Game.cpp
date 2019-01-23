@@ -20,7 +20,7 @@ void Game::Init(const char *title, int x_pos, int y_pos, int width, int height, 
 
         renderer = SDL_CreateRenderer(window, -1, 0);
         if (renderer) {
-            SDL_SetRenderDrawColor(renderer, 34, 44, 141, 255);
+            SDL_SetRenderDrawColor(renderer, 34, 44, 141, SDL_ALPHA_OPAQUE);
             std::cout << "Renderer Created!...." << std::endl;
         }
         is_running = true;
@@ -35,8 +35,14 @@ void Game::Update() {
 }
 
 void Game::Render() {
+    SDL_SetRenderDrawColor(renderer, 34, 44, 141, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
-
+    for (int i = 0; i < 160; ++i) {
+        SDL_SetRenderDrawColor(renderer, 40, 111, 15, SDL_ALPHA_OPAQUE);
+        SDL_RenderDrawLine(renderer, i, 0, i, 480);
+        SDL_SetRenderDrawColor(renderer, 40, 111, 15, SDL_ALPHA_OPAQUE);
+        SDL_RenderDrawLine(renderer, 640 - i, 0, 640 - i, 480);
+    }
     SDL_RenderPresent(renderer);
 }
 

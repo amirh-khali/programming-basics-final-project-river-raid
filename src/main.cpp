@@ -10,7 +10,7 @@ int main () {
 
         main_game->HandelEvents();
         main_game->Update();
-        
+
         main_game->Render();
     }
      return 0;
