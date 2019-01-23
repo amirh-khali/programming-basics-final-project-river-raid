@@ -34,15 +34,21 @@ void Game::Update() {
 
 }
 
-void Game::Render() {
+void Game::Background() {
     SDL_SetRenderDrawColor(renderer, 34, 44, 141, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
-    for (int i = 0; i < 160; ++i) {
+    for (int i = 0; i < size_of_wall; ++i) {
         SDL_SetRenderDrawColor(renderer, 40, 111, 15, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawLine(renderer, i, 0, i, 480);
         SDL_SetRenderDrawColor(renderer, 40, 111, 15, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawLine(renderer, 640 - i, 0, 640 - i, 480);
     }
+    //SDL_RenderPresent(renderer);
+}
+
+void Game::Render() {
+    //SDL_RenderClear(renderer);
+
     SDL_RenderPresent(renderer);
 }
 
@@ -50,8 +56,6 @@ void Game::Render() {
 void Game::HandelEvents() {
     SDL_Event event;
     SDL_PollEvent(&event);
-
-    //std::cout << is_running << std::endl;
 
     if (event.type == SDL_QUIT) {
         is_running = false;
