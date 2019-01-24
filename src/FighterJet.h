@@ -15,7 +15,7 @@ class FighterJet : public Objects {
     //Shot
     void Shot();
 
-    protected:
+    private:
 
 };
 

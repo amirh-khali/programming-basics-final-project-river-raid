@@ -3,8 +3,13 @@
 
 #include "main.h"
 #include "FighterJet.h"
+#include "Shot.h"
+
+using namespace std;
 
 class FighterJet;
+
+class Shot;
 
 class Game {
     public:
@@ -31,6 +36,7 @@ class Game {
         SDL_Window *window = NULL;
         bool is_running = false;
         FighterJet *fighter_jet = nullptr;
+        vector<Shot *> shots;
 };
 
 #endif //GAME_DEF_
