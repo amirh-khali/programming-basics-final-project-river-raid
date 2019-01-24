@@ -21,7 +21,7 @@ void Game::Init() {
         }
 
         //create fighter_jet
-        fighter_jet = new Objects();
+        fighter_jet = new FighterJet();
         fighter_jet->Init(288, 240);
 
         //Is Running
@@ -42,28 +42,7 @@ void Game::Render() {
 
 
 
-    // //Renderer Things
-    // SDL_Surface *surface = IMG_Load( "fighter_jet.png" );
-    //
-    // //GetError
-    // // if (surface == NULL) {
-    // //     fprintf(stderr, "CreateRGBSurface failed: %s\n", SDL_GetError());
-    // // }
-    //
-    // SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    // SDL_FreeSurface(surface);
-    //
-    // //des_rec
-    // SDL_Rect des_rec;
-    // des_rec.h = 32;
-    // des_rec.w = 32;
-    // des_rec.x = 288;
-    // des_rec.y = 240;
-    //
-    // //Copy To Renderer
-    // SDL_RenderCopy(renderer, texture, NULL, &des_rec);
-
-
+    // //Renderer Stuffs
     fighter_jet->Render(renderer);
 
 

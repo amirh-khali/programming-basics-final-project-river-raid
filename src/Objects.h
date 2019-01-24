@@ -1,10 +1,7 @@
 #ifndef OBJECTS_DEF_
 #define OBJECTS_DEF_
 
-#include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <cstring>
+#include "main.h"
 
 class Objects {
     public:
@@ -18,9 +15,7 @@ class Objects {
         //Update
         void Update();
 
-        //Render
-        void Render(SDL_Renderer *renderer);
-    private:
+    protected:
 
         //Object Image path
         //std::string image_path;

@@ -1,13 +1,10 @@
 #ifndef GAME_DEF_
 #define GAME_DEF_
 
-#include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <cstring>
-#include "Objects.h"
+#include "main.h"
+#include "FighterJet.h"
 
-class Objects;
+class FighterJet;
 
 class Game {
     public:
@@ -33,7 +30,7 @@ class Game {
         SDL_Renderer *renderer = NULL;
         SDL_Window *window = NULL;
         bool is_running = false;
-        Objects *fighter_jet = nullptr;
+        FighterJet *fighter_jet = nullptr;
 };
 
 #endif //GAME_DEF_
