@@ -1,24 +1,39 @@
 #ifndef GAME_DEF_
 #define GAME_DEF_
-#include "main.h"
+
+#include <iostream>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <cstring>
+#include "Objects.h"
+
+class Objects;
 
 class Game {
-    private:
-        bool is_running;
-        int size_of_wall = 160;
-        SDL_Window *window;
-        SDL_Renderer *renderer;
     public:
+        //Constructor
         Game();
-        ~Game();
 
-        void Init(const char *title, int x_pos, int y_pos, int width, int height, bool fullscreen);
+        //Initialize
+        void Init();
+
+        //Update
         void Update();
-        void Background();
-        void Render();
-        void HandelEvents();
-        void Clean();
 
-        bool Running();
+        //Render
+        void Render();
+
+        //Handel Events
+        void HandelEvents();
+
+        //Position Of Running
+        bool IsRunning();
+
+    private:
+        SDL_Renderer *renderer = NULL;
+        SDL_Window *window = NULL;
+        bool is_running = false;
+        Objects *fighter_jet = nullptr;
 };
+
 #endif //GAME_DEF_

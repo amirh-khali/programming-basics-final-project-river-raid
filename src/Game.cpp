@@ -1,58 +1,77 @@
 #include "Game.h"
 
-Game::Game() {}
-Game::~Game() {}
+//Constructor
+Game::Game(){}
 
-void Game::Init(const char *title, int x_pos, int y_pos, int width, int height, bool fullscreen) {
-    int flag = 0;
-
-    if (fullscreen) {
-        flag = SDL_WINDOW_FULLSCREEN;
-    }
-
+//Initialize
+void Game::Init() {
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
-        std::cout << "Subsystems Initialised!...." << std::endl;
 
-        window = SDL_CreateWindow(title, x_pos, y_pos, width, height, flag);
+        //Create window
+        window = SDL_CreateWindow("River Raid", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, 0);
         if (window) {
             std::cout << "Window Created!...." << std::endl;
         }
 
+        //Create Renderer
         renderer = SDL_CreateRenderer(window, -1, 0);
         if (renderer) {
-            SDL_SetRenderDrawColor(renderer, 34, 44, 141, SDL_ALPHA_OPAQUE);
             std::cout << "Renderer Created!...." << std::endl;
+            SDL_SetRenderDrawColor(renderer, 34, 44, 141, 255);
         }
+
+        //create fighter_jet
+        fighter_jet = new Objects();
+        fighter_jet->Init(288, 240);
+
+        //Is Running
         is_running = true;
     }
     else {
+
+        //Is Running
         is_running = false;
     }
 }
 
-void Game::Update() {
-
-}
-
-void Game::Background() {
-    SDL_SetRenderDrawColor(renderer, 34, 44, 141, SDL_ALPHA_OPAQUE);
-    SDL_RenderClear(renderer);
-    for (int i = 0; i < size_of_wall; ++i) {
-        SDL_SetRenderDrawColor(renderer, 40, 111, 15, SDL_ALPHA_OPAQUE);
-        SDL_RenderDrawLine(renderer, i, 0, i, 480);
-        SDL_SetRenderDrawColor(renderer, 40, 111, 15, SDL_ALPHA_OPAQUE);
-        SDL_RenderDrawLine(renderer, 640 - i, 0, 640 - i, 480);
-    }
-    //SDL_RenderPresent(renderer);
-}
-
+//Render
 void Game::Render() {
-    //SDL_RenderClear(renderer);
 
+    //Clear Renderer
+    SDL_RenderClear(renderer);
+
+
+
+    // //Renderer Things
+    // SDL_Surface *surface = IMG_Load( "fighter_jet.png" );
+    //
+    // //GetError
+    // // if (surface == NULL) {
+    // //     fprintf(stderr, "CreateRGBSurface failed: %s\n", SDL_GetError());
+    // // }
+    //
+    // SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    // SDL_FreeSurface(surface);
+    //
+    // //des_rec
+    // SDL_Rect des_rec;
+    // des_rec.h = 32;
+    // des_rec.w = 32;
+    // des_rec.x = 288;
+    // des_rec.y = 240;
+    //
+    // //Copy To Renderer
+    // SDL_RenderCopy(renderer, texture, NULL, &des_rec);
+
+
+    fighter_jet->Render(renderer);
+
+
+    //Present Renderer
     SDL_RenderPresent(renderer);
 }
 
-
+//Handel Events
 void Game::HandelEvents() {
     SDL_Event event;
     SDL_PollEvent(&event);
@@ -62,13 +81,7 @@ void Game::HandelEvents() {
     }
 }
 
-void Game::Clean() {
-    SDL_DestroyWindow(window);
-    SDL_DestroyRenderer(renderer);
-    SDL_Quit();
-    std::cout << "Game Cleaned!..." << std::endl;
-}
-
-bool Game::Running() {
+//Position Of Running
+bool Game::IsRunning() {
     return is_running;
 }
