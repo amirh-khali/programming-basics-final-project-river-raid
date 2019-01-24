@@ -14,7 +14,7 @@ void Game::Init() {
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
 
         //Create window
-        window = SDL_CreateWindow("River Raid", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, 0);
+        window = SDL_CreateWindow("River Raid", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 400, 600, 0);
         if (window) {
             std::cout << "Window Created!...." << std::endl;
         }

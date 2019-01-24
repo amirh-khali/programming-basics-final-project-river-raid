@@ -3,6 +3,8 @@
 
 #include "main.h"
 
+Map();
+~Map();
 
 class Map(){
 
@@ -14,5 +16,6 @@ class Map(){
         SDL_Rec src_rec, des_rec;
 
         SDL_Texture *ground; 
+        int map[20][30];
 };
 #endif
