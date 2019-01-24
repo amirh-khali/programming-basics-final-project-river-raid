@@ -30,6 +30,10 @@ void Game::Init() {
         fighter_jet = new FighterJet();
         fighter_jet->Init(288, 240);
 
+        //Create Shots
+        for (int i = 0; i < 200; ++i) {
+            shots[i] = new Shot();
+        }
         //Is Running
         is_running = true;
     }
@@ -42,14 +46,27 @@ void Game::Init() {
 
 //Update
 void Game::Update() {
+    fps++;
+
     fighter_jet->Update();
-    for (int i = 0; i < shots.size(); ++i) {
-        shots[i]->Update();
-        shots[i]->ChangeSpeed(0, -10);
+
+    if (fps >= 100) {
+        fps = 0;
+        for (int i = 0; i < 200; ++i) {
+
+            //Update location
+            if (shots[i]->Fired()) {
+                shots[i]->Update();
+                shots[i]->ChangeSpeed(0, -10);
+            }
+
+            //Delete Exteras
+            if(shots[i]->des_rec.y < 0) {
+                shots[i]->fired = 0;
+            }
+        }
     }
-    while(shots.front()->des_rec.y <= 0) {
-        shots.po();
-    }
+
 }
 
 
@@ -64,8 +81,12 @@ void Game::Render() {
     // //Renderer Stuffs
     fighter_jet->Render(renderer);
 
-    for(int i = 0; i < shots.size(); ++i) {
-        shots[i]->Render(renderer);
+    for(int i = 0; i < 200; ++i) {
+
+        //if i th Fired then render
+        if (shots[i]->Fired()) {
+            shots[i]->Render(renderer);
+        }
     }
     //shot = new Shot();
     //shot->Init(288, 140);
@@ -93,14 +114,28 @@ void Game::HandelEvents() {
                 case SDLK_LEFT:
                     fighter_jet->ChangeSpeed(-10, 0);
                     break;
+            }
                 //case SDLK_UP:
                     //fighter_jet->ChangeSpeed(0, -10);
-                case SDLK_z:
-                    Shot *new_shot = new Shot();
-                    new_shot->Init(fighter_jet->des_rec.x, fighter_jet->des_rec.y);
-                    new_shot->ChangeSpeed(0, -10);
-                    shots.pb(new_shot);
-                    break;
+            if (event.key.keysym.sym == SDLK_z) {
+                hold = true;
+            } else if (hold && !shots[last_shot]->Fired()) {
+
+                //Fired
+                shots[last_shot]->fired = true;
+
+                //Hold
+                hold = false;
+
+                //located
+                shots[last_shot]->Init(fighter_jet->des_rec.x, fighter_jet->des_rec.y);
+
+                //change shot speed
+                shots[last_shot]->ChangeSpeed(0, -10);
+
+                //update last shot
+                last_shot++;
+                last_shot %= 200;
             }
             break;
     }

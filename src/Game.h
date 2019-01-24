@@ -36,7 +36,11 @@ class Game {
         SDL_Window *window = NULL;
         bool is_running = false;
         FighterJet *fighter_jet = nullptr;
-        vector<Shot *> shots;
+        //vector<Shot *> shots;
+        Shot *shots[200];
+        int fps = 0;
+        int last_shot = 0;
+        bool hold = 0;
 };
 
 #endif //GAME_DEF_
