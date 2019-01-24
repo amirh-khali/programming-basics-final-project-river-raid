@@ -3,12 +3,12 @@
 
 #include "main.h"
 
-Map();
-~Map();
-
 class Map(){
 
     public:
+        Map();
+        ~Map();
+        
         void Init();
         void Draw_map();
 
