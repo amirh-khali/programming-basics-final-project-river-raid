@@ -8,7 +8,7 @@ class Objects;
 
 class Shot : public Objects {
     public:
-
+        
         //Render
         void Render(SDL_Renderer *renderer);
 

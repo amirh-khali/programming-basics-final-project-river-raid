@@ -115,29 +115,28 @@ void Game::HandelEvents() {
                     fighter_jet->ChangeSpeed(-10, 0);
                     break;
             }
-                //case SDLK_UP:
-                    //fighter_jet->ChangeSpeed(0, -10);
             if (event.key.keysym.sym == SDLK_z) {
                 hold = true;
-            } else if (hold && !shots[last_shot]->Fired()) {
-
-                //Fired
-                shots[last_shot]->fired = true;
-
-                //Hold
-                hold = false;
-
-                //located
-                shots[last_shot]->Init(fighter_jet->des_rec.x, fighter_jet->des_rec.y);
-
-                //change shot speed
-                shots[last_shot]->ChangeSpeed(0, -10);
-
-                //update last shot
-                last_shot++;
-                last_shot %= 200;
             }
             break;
+    }
+    if (hold && !shots[last_shot]->Fired()) {
+
+        //Fired
+        shots[last_shot]->fired = true;
+
+        //Hold
+        hold = false;
+
+        //located
+        shots[last_shot]->Init(fighter_jet->des_rec.x, fighter_jet->des_rec.y);
+
+        //change shot speed
+        shots[last_shot]->ChangeSpeed(0, -10);
+
+        //update last shot
+        last_shot++;
+        last_shot %= 200;
     }
 }
 
