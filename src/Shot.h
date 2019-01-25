@@ -8,11 +8,6 @@ class Objects;
 
 class Shot : public Objects {
     public:
-        
-        //Render
-        void Render(SDL_Renderer *renderer);
-
-        //Fired
         bool Fired();
 
         bool fired = 0;

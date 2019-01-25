@@ -14,9 +14,26 @@ void Objects::Init(int x_pos, int y_pos) {
     des_rec.x = x_pos;
     des_rec.y = y_pos;
 
-    //Load Texture
-    //image_path = path;
+}
 
+void Objects::Render(SDL_Renderer *renderer, const char *path) {
+    //Load Surface
+    SDL_Surface *surface = IMG_Load( path );
+
+    //GetError
+    if (surface == NULL) {
+        fprintf(stderr, "CreateRGBSurface failed: %s\n", SDL_GetError());
+    }
+
+    //Create Texture
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    //Copy To Renderer
+    SDL_RenderCopy(renderer, texture, NULL, &des_rec);
+
+    //Free Surface & Texture
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture( texture );
 }
 
 void Objects::ChangeSpeed(int new_vx, int new_vy) {

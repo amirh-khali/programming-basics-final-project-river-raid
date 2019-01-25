@@ -1,10 +1,10 @@
 #include "Game.h"
 #include <vector>
+//#include "Map.h"
 
 using namespace std;
 
-#define pb push_back
-#define po pop_back
+//Map *map = new Map();
 
 //Constructor
 Game::Game(){}
@@ -29,11 +29,13 @@ void Game::Init() {
         //create fighter_jet
         fighter_jet = new FighterJet();
         fighter_jet->Init(288, 240);
+        shot = new Shot();
 
-        //Create Shots
-        for (int i = 0; i < 200; ++i) {
-            shots[i] = new Shot();
-        }
+        //create map
+        //Map *map = new Map();
+        //map->Init();
+        //map->DrawMap(renderer);
+
         //Is Running
         is_running = true;
     }
@@ -46,26 +48,26 @@ void Game::Init() {
 
 //Update
 void Game::Update() {
+
     fps++;
 
+    //FighterJet Update
     fighter_jet->Update();
 
+    //Shots Update
     if (fps >= 100) {
-        fps = 0;
-        for (int i = 0; i < 200; ++i) {
+    fps = 0;
 
-            //Update location
-            if (shots[i]->Fired()) {
-                shots[i]->Update();
-                shots[i]->ChangeSpeed(0, -10);
-            }
-
-            //Delete Exteras
-            if(shots[i]->des_rec.y < 0) {
-                shots[i]->fired = 0;
-            }
-        }
+    if (shot->Fired()) {
+        shot->Update();
+        shot->ChangeSpeed(0, -20);
     }
+
+    //Delete Exteras
+    if(shot->des_rec.y < 0)
+        shot->fired = 0;
+    }
+
 
 }
 
@@ -73,25 +75,20 @@ void Game::Update() {
 
 //Render
 void Game::Render() {
-
     //Clear Renderer
     SDL_RenderClear(renderer);
 
 
-    // //Renderer Stuffs
-    fighter_jet->Render(renderer);
+    //Renderer Stuffs
 
-    for(int i = 0; i < 200; ++i) {
+    //Render FighterJet
+    fighter_jet->Render(renderer, "Resource/fighter_jet.png" );
 
-        //if i th Fired then render
-        if (shots[i]->Fired()) {
-            shots[i]->Render(renderer);
-        }
-    }
-    //shot = new Shot();
-    //shot->Init(288, 140);
-    //shot->Render(renderer);
+    //Render Shots
+    if (shot->Fired())
+        shot->Render(renderer, "Resource/shot.png");
 
+    //map->DrawMap(renderer);
 
     //Present Renderer
     SDL_RenderPresent(renderer);
@@ -103,9 +100,12 @@ void Game::HandelEvents() {
     SDL_PollEvent(&event);
 
     switch (event.type) {
+        //Close window
         case SDL_QUIT:
             is_running = false;
             break;
+
+        //Handle Key Pressed
         case SDL_KEYDOWN:
             switch (event.key.keysym.sym) {
                 case SDLK_RIGHT:
@@ -115,28 +115,18 @@ void Game::HandelEvents() {
                     fighter_jet->ChangeSpeed(-10, 0);
                     break;
             }
-            if (event.key.keysym.sym == SDLK_z) {
-                hold = true;
+            if (event.key.keysym.sym == SDLK_z && !shot->Fired()) {
+
+                //Fired
+                shot->fired = true;
+
+                //located
+                shot->Init(fighter_jet->des_rec.x, fighter_jet->des_rec.y);
+
+                //Change Shot speed
+                shot->ChangeSpeed(0, -20);
             }
             break;
-    }
-    if (hold && !shots[last_shot]->Fired()) {
-
-        //Fired
-        shots[last_shot]->fired = true;
-
-        //Hold
-        hold = false;
-
-        //located
-        shots[last_shot]->Init(fighter_jet->des_rec.x, fighter_jet->des_rec.y);
-
-        //change shot speed
-        shots[last_shot]->ChangeSpeed(0, -10);
-
-        //update last shot
-        last_shot++;
-        last_shot %= 200;
     }
 }
 

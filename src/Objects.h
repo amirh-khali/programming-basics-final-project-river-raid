@@ -6,26 +6,19 @@
 class Objects {
     public:
 
-        //Constructor
         Objects();
+        ~Objects();
 
-        //Initialize
         void Init(int x_pos = 0, int y_pos = 0);
-
-        //Change Speed
+        void Render(SDL_Renderer *renderer, const char *path);
         void ChangeSpeed(int new_vx, int new_vy);
-
-        //Update
         void Update();
 
-        //Object Location && Size
+        //Object Location && Siz
         SDL_Rect des_rec;
+
     protected:
-
-        //Object Image path
-        //std::string image_path;
-        //SDL_Surface *surface = NULL;
-
+        
         //speed
         int vx = 0, vy = 0; // + ^ >
 };

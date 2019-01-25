@@ -9,10 +9,6 @@ class Objects;
 class FighterJet : public Objects {
     public:
 
-    //Render
-    void Render(SDL_Renderer *renderer);
-
-    //Shot
     void Shot();
 
     private:

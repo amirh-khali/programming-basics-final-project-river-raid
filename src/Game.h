@@ -4,6 +4,7 @@
 #include "main.h"
 #include "FighterJet.h"
 #include "Shot.h"
+#include "Map.h"
 
 using namespace std;
 
@@ -11,36 +12,35 @@ class FighterJet;
 
 class Shot;
 
+class Map;
+
 class Game {
     public:
         //Constructor
         Game();
+        ~Game();
 
-        //Initialize
         void Init();
-
-        //Update
         void Update();
-
-        //Render
         void Render();
-
-        //Handel Events
         void HandelEvents();
 
-        //Position Of Running
         bool IsRunning();
 
     private:
+        //Main Renderer
         SDL_Renderer *renderer = NULL;
+
+        //Main Window
         SDL_Window *window = NULL;
+
+        //Running Pos
         bool is_running = false;
+
         FighterJet *fighter_jet = nullptr;
-        //vector<Shot *> shots;
-        Shot *shots[200];
+        Shot *shot = nullptr;
+        //Map *map = nullptr;
         int fps = 0;
-        int last_shot = 0;
-        bool hold = 0;
 };
 
 #endif //GAME_DEF_
