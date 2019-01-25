@@ -29,8 +29,10 @@ void Game::Init() {
         //create fighter_jet
         fighter_jet = new FighterJet();
         fighter_jet->Init(288, 240);
+
         shot = new Shot();
 
+        map = new Map();
         //create map
         //Map *map = new Map();
         //map->Init();
@@ -49,18 +51,19 @@ void Game::Init() {
 //Update
 void Game::Update() {
 
-    fps++;
+    score = SDL_GetTicks() / 30;
+    //cout << score << '\n';
 
     //FighterJet Update
     fighter_jet->Update();
 
     //Shots Update
-    if (fps >= 100) {
-    fps = 0;
+    if (SDL_GetTicks() / 50 > fps) {
+    fps++;
 
     if (shot->Fired()) {
         shot->Update();
-        shot->ChangeSpeed(0, -20);
+        shot->ChangeSpeed(0, -30);
     }
 
     //Delete Exteras
@@ -68,6 +71,16 @@ void Game::Update() {
         shot->fired = 0;
     }
 
+    if (score == 10) {
+
+        map->Update(score, 0);
+
+    }
+
+    if (score == 550) {
+
+        map->Update(score, 1);
+    }
 
 }
 
@@ -75,11 +88,17 @@ void Game::Update() {
 
 //Render
 void Game::Render() {
+
+    //River
+    SDL_SetRenderDrawColor(renderer, 34, 44, 141, SDL_ALPHA_OPAQUE);
+
     //Clear Renderer
     SDL_RenderClear(renderer);
 
-
     //Renderer Stuffs
+
+    //Map Render
+    map->Render(renderer, score);
 
     //Render FighterJet
     fighter_jet->Render(renderer, "Resource/fighter_jet.png" );
@@ -96,37 +115,32 @@ void Game::Render() {
 
 //Handel Events
 void Game::HandelEvents() {
+
     SDL_Event event;
     SDL_PollEvent(&event);
 
-    switch (event.type) {
-        //Close window
-        case SDL_QUIT:
-            is_running = false;
-            break;
+    if (event.type == SDL_QUIT) {
+        is_running = false;
+    }
 
-        //Handle Key Pressed
-        case SDL_KEYDOWN:
-            switch (event.key.keysym.sym) {
-                case SDLK_RIGHT:
-                    fighter_jet->ChangeSpeed( 10, 0);
-                    break;
-                case SDLK_LEFT:
-                    fighter_jet->ChangeSpeed(-10, 0);
-                    break;
-            }
-            if (event.key.keysym.sym == SDLK_z && !shot->Fired()) {
+    else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT) {
+        fighter_jet->ChangeSpeed( 10, 0);
+    }
 
-                //Fired
-                shot->fired = true;
+    else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_LEFT) {
+        fighter_jet->ChangeSpeed( -10, 0);
+    }
 
-                //located
-                shot->Init(fighter_jet->des_rec.x, fighter_jet->des_rec.y);
+    else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_z && !shot->Fired()) {
 
-                //Change Shot speed
-                shot->ChangeSpeed(0, -20);
-            }
-            break;
+        //Fired
+        shot->fired = true;
+
+        //located
+        shot->Init(fighter_jet->des_rec.x, fighter_jet->des_rec.y);
+
+        //Change Shot speed
+        shot->ChangeSpeed(0, -30);
     }
 }
 

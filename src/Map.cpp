@@ -1,84 +1,55 @@
 #include "Map.h"
 
-
-/*int lvl1[30][20] = {//manual map (maybe changed to automatic)
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-};
-int lvl1[3][2];
-Map::Map(){}
-
-
 void Map::Init() {
-    //std::cout<<"first"<<std::endl;
-    des_rec.h = 32;
-    des_rec.w = 32;
-    des_rec.x = 0;
-    des_rec.y = 0;
 
-    std::cout<<"first2"<<std::endl;
+}
 
-    for(int i =0;i < 3;i++){
-        for(int j =0;j < 2;j++){
-            if(j >= 0 && j < 4){
-                lvl1[i][j] = 1;
+void Map::Update(int start_break, bool bway) {
+
+    start_wall_break = start_break;
+    finish_wall_break = start_break + 128;
+
+    Broadway = bway;
+}
+
+void Map::Render(SDL_Renderer *renderer, Uint32 score) {
+
+    //Change Color
+    SDL_SetRenderDrawColor(renderer, 40, 111, 15, SDL_ALPHA_OPAQUE);
+
+    //Make Lines
+    for (int i = 0; i < 480; ++i) {
+
+        //cout << score << ' ' << start_wall_break << ' ' << i << ' ' << i - (int)score + start_wall_break <<  ' ' << finish_wall_break << '\n';
+        if (!Broadway) {
+            if ((int)score - i > finish_wall_break) {
+                SDL_RenderDrawLine(renderer, 0, i, (size_of_wall + 128), i);
+                SDL_RenderDrawLine(renderer, 640 - (size_of_wall + 128), i, 640, i);
             }
-            else{
-                lvl1[i][j] = 0;
+            else if ((int)score - i > start_wall_break) {
+                //cout << ".\n";
+                SDL_RenderDrawLine(renderer, 0, i, (size_of_wall + (int)score - i - start_wall_break), i);
+                SDL_RenderDrawLine(renderer, 640 - (size_of_wall + (int)score - i - start_wall_break), i, 640, i);
+            }
+            else {
+                SDL_RenderDrawLine(renderer, 0, i, (size_of_wall), i);
+                SDL_RenderDrawLine(renderer, 640 - (size_of_wall), i, 640, i);
+            }
+        }
+        else {
+            if ((int)score - i > finish_wall_break) {
+                SDL_RenderDrawLine(renderer, 0, i, (size_of_wall), i);
+                SDL_RenderDrawLine(renderer, 640 - (size_of_wall), i, 640, i);
+            }
+            else if ((int)score - i > start_wall_break) {
+                //cout << ".\n";
+                SDL_RenderDrawLine(renderer, 0, i, (size_of_wall + 128 - (int)score + i + start_wall_break), i);
+                SDL_RenderDrawLine(renderer, 640 - (size_of_wall + 128 - (int)score + i + start_wall_break), i, 640, i);
+            }
+            else {
+                SDL_RenderDrawLine(renderer, 0, i, (size_of_wall + 128), i);
+                SDL_RenderDrawLine(renderer, 640 - (size_of_wall + 128), i, 640, i);
             }
         }
     }
-    std::cout<<"second"<<std::endl;
 }
-
-void Map::DrawMap(SDL_Renderer *renderer) {
-    std::cout<<"it's here!!!"<<std::endl;
-    for(int i =0;i < 3;i++){
-        for(int j =0;j < 2;j++){
-            if(lvl1[i][j] == 1){
-                //des_rec.x = 32 * j;
-                //des_rec.y = -32 * i;
-                SDL_Surface *surface = IMG_Load( "Resource/green_tile.png" );
-                //Create Texture
-                std::cout<<"now here!!!"<<std::endl;
-                SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-                //Free surface
-                SDL_FreeSurface(surface);
-                //Copy To Renderer
-                SDL_RenderCopy(renderer, texture, NULL, &des_rec);
-                std::cout<<"and now here!!!"<<std::endl;
-                SDL_RenderPresent(renderer);
-                std::cout<<"asd"<<std::endl;
-            }
-        }
-    }
-}
-*/

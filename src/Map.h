@@ -6,15 +6,23 @@
 class Map {
 
     public:
-        Map();
-        ~Map();
+        Map(){}
+        ~Map(){}
 
         void Init();
 
-        void DrawMap(SDL_Renderer *renderer);
+        void Update(int size, bool bway);
+
+        void Render(SDL_Renderer *renderer, Uint32 score);
     private:
-        SDL_Rect src_rec, des_rec;
+
+        int size_of_wall = 128;
+
+        int start_wall_break = -480, finish_wall_break = -480;
+
         SDL_Texture *ground = NULL;
+
+        bool Broadway = 1;
         //int map[20][30];
 };
 

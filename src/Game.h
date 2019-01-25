@@ -37,10 +37,12 @@ class Game {
         //Running Pos
         bool is_running = false;
 
+        Uint32 score = 0;
+
         FighterJet *fighter_jet = nullptr;
         Shot *shot = nullptr;
-        //Map *map = nullptr;
-        int fps = 0;
+        Map *map = nullptr;
+        Uint32 fps = 0;
 };
 
 #endif //GAME_DEF_

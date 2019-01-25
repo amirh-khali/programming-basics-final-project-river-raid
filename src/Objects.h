@@ -18,7 +18,7 @@ class Objects {
         SDL_Rect des_rec;
 
     protected:
-        
+
         //speed
         int vx = 0, vy = 0; // + ^ >
 };
