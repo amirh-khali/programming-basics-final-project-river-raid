@@ -66,8 +66,8 @@ void Game::MakeEnemies() {
         else {
             wall_size = map->size_of_wall;
         }
-        int x_pos = rand() % (640 - 2 * wall_size - 126);
-        x_pos += wall_size + 63 ;
+        int x_pos = rand() % (640 - 2 * wall_size - 106);
+        x_pos += wall_size + 26 ;
 
         enemies[last_enemy]->ChangeSpeed(0, 3);
 
