@@ -4,11 +4,11 @@
 Objects::Objects() {}
 
 //Initialize
-void Objects::Init(int x_pos, int y_pos) {
+void Objects::Init(int x_pos, int y_pos, int h, int w) {
 
     //Set Object Size
-    des_rec.h = 32;
-    des_rec.w = 32;
+    des_rec.h = h;
+    des_rec.w = w;
 
     //Set Object location
     des_rec.x = x_pos;

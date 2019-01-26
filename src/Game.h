@@ -4,13 +4,19 @@
 #include "main.h"
 #include "FighterJet.h"
 #include "Shot.h"
+#include "Enemies.h"
 #include "Map.h"
+#include <ctime>
+#include <cstdlib>
+
 
 using namespace std;
 
 class FighterJet;
 
 class Shot;
+
+class Enemies;
 
 class Map;
 
@@ -24,6 +30,7 @@ class Game {
         void Update();
         void Render();
         void HandelEvents();
+        void MakeEnemies();
 
         bool IsRunning();
 
@@ -42,6 +49,11 @@ class Game {
         FighterJet *fighter_jet = nullptr;
         Shot *shot = nullptr;
         Map *map = nullptr;
+
+        //Enemies
+        Enemies *enemies[5];
+        int enemies_num = 0, last_enemy = 0;
+
         Uint32 fps = 0;
 
         int lvl = 0;

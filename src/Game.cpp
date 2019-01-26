@@ -1,10 +1,8 @@
 #include "Game.h"
 #include <vector>
-//#include "Map.h"
+
 
 using namespace std;
-
-//Map *map = new Map();
 
 //Constructor
 Game::Game(){}
@@ -33,10 +31,10 @@ void Game::Init() {
         shot = new Shot();
 
         map = new Map();
-        //create map
-        //Map *map = new Map();
-        //map->Init();
-        //map->DrawMap(renderer);
+
+        for (int i = 0; i < 3; ++i) {
+            enemies[i] = new Enemies();
+        }
 
         //Is Running
         is_running = true;
@@ -47,6 +45,40 @@ void Game::Init() {
         is_running = false;
     }
 }
+
+//Enemies
+void Game::MakeEnemies() {
+
+    bool n_add_enemy;
+    n_add_enemy = rand() % 1000;
+
+    if (!n_add_enemy && enemies_num < 3) {
+
+        int type = rand() % 4;
+        enemies[last_enemy]->type = 3;
+
+        enemies[last_enemy]->on_screen = 1;
+
+        int wall_size;
+        if (score >= map->start_wall_break && score <= map->finish_wall_break) {
+            wall_size = 256;
+        }
+        else {
+            wall_size = map->size_of_wall;
+        }
+        int x_pos = rand() % (640 - 2 * wall_size - 126);
+        x_pos += wall_size + 63 ;
+
+        enemies[last_enemy]->ChangeSpeed(0, 3);
+
+        enemies[last_enemy]->Init(x_pos, 0, 64, 64);
+        enemies_num++;
+
+        last_enemy++;
+        last_enemy %= 3;
+    }
+}
+
 
 //Update
 void Game::Update() {
@@ -60,25 +92,107 @@ void Game::Update() {
     fighter_jet->Update();
 
     //Shots Update
-    if (SDL_GetTicks() / 50 > fps) {
-    fps++;
+    if (SDL_GetTicks() / 30 > fps) {
+        fps++;
 
-    if (shot->Fired()) {
-        shot->Update();
-        shot->ChangeSpeed(0, -30);
+        if (shot->Fired()) {
+            shot->Update();
+            shot->ChangeSpeed(0, -20);
+        }
+
+        //Delete Exteras
+        if(shot->des_rec.y < 0)
+            shot->fired = 0;
+
+        for (int i = 0; i < 3; ++i) {
+            if (enemies[i]->OnScreen()) {
+                int vx, vy;
+                vx = enemies[i]->vx;
+                vx = enemies[i]->vy;
+
+                enemies[i]->Update();
+                enemies[i]->ChangeSpeed(0, 3);
+            }
+
+            if (enemies[i]->des_rec.y > 480) {
+                    enemies[i]->on_screen = 0;
+                    enemies_num--;
+            }
+
+            //Kill
+            if(shot->Fired()
+            && enemies[i]->OnScreen()
+            && fighter_jet->des_rec.y > enemies[i]->des_rec.y + 40
+            && shot->des_rec.y <= (enemies[i]->des_rec.y + 32)
+            && shot->des_rec.x >= enemies[i]->des_rec.x
+            && shot->des_rec.x <=  enemies[i]->des_rec.x + 64) {
+                enemies[i]->on_screen = 0;
+                enemies_num--;
+                shot->fired = 0;
+            }
+
+            //Crash
+            if( enemies[i]->OnScreen()
+            && fighter_jet->des_rec.y <= (enemies[i]->des_rec.y + 32)
+            && fighter_jet->des_rec.y + 32 >= (enemies[i]->des_rec.y)
+            && fighter_jet->des_rec.x + 32 >= enemies[i]->des_rec.x
+            && fighter_jet->des_rec.x <=  enemies[i]->des_rec.x + 64){
+                cout<<"boom"<<endl;
+                is_running = false;
+            }
+        }
     }
-
-    //Delete Exteras
-    if(shot->des_rec.y < 0)
-        shot->fired = 0;
-    }
-
     //lvl update
     if ((score / 600) > lvl) {
 
+        //cout << score << '\n';
         map->Update(score, lvl % 2);
 
         lvl++;
+    }
+
+    if ((int)score - fighter_jet->des_rec.y < map->start_wall_break) {
+        if (!map->broadway) {
+            if (fighter_jet->des_rec.x + 32 >= 640 - 128 || fighter_jet->des_rec.x <= 128) {
+                is_running = false;
+                cout << "1\n";
+            }
+        }
+        else {
+            if (fighter_jet->des_rec.x + 32 >= 640 - 256 || fighter_jet->des_rec.x <= 256) {
+                is_running = false;
+                //cout << score << ' ' << fighter_jet->des_rec.y << ' ' << map->start_wall_break << '\n';
+                cout << "a::\n";
+            }
+        }
+    }
+    else if ((int)score - fighter_jet->des_rec.y < map->finish_wall_break) {
+        if (map->broadway) {
+            if (fighter_jet->des_rec.x >= 640 - (map->size_of_wall + 128 - (int)score + fighter_jet->des_rec.y + map->start_wall_break) || fighter_jet->des_rec.x <= (map->size_of_wall + 128 - (int)score + fighter_jet->des_rec.y + map->start_wall_break)) {
+                is_running = false;
+                cout << "b::\n";
+            }
+        }
+        else {
+            if (fighter_jet->des_rec.x >= 640 - (map->size_of_wall - 128 + (int)score - fighter_jet->des_rec.y - map->start_wall_break) || fighter_jet->des_rec.x <= (map->size_of_wall - 128 + (int)score - fighter_jet->des_rec.y - map->start_wall_break)) {
+                is_running = false;
+                cout << "c::\n";
+            }
+        }
+    }
+    else {
+        if (!map->broadway) {
+            if (fighter_jet->des_rec.x + 32 >= 640 - 256 || fighter_jet->des_rec.x <= 256) {
+                is_running = false;
+                cout << "3\n";
+            }
+        }
+        else {
+            if (fighter_jet->des_rec.x + 32 >= 640 - 128 || fighter_jet->des_rec.x <= 128) {
+                is_running = false;
+                cout << "4\n";
+            }
+        }
     }
 }
 
@@ -105,7 +219,12 @@ void Game::Render() {
     if (shot->Fired())
         shot->Render(renderer, "Resource/shot.png");
 
-    //map->DrawMap(renderer);
+    for (int i = 0; i < 3; ++i) {
+        if (enemies[i]->OnScreen()) {
+            enemies[i]->Render(renderer, "Resource/tanker.png");
+            //cout << i << ' ' << enemies[i]->des_rec.x << ' ' << enemies[i]->des_rec.y << '\n';
+        }
+    }
 
     //Present Renderer
     SDL_RenderPresent(renderer);
@@ -117,11 +236,8 @@ void Game::HandelEvents() {
     SDL_Event event;
     SDL_PollEvent(&event);
 
-    if (event.type == SDL_QUIT) {
-        is_running = false;
-    }
 
-    else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT) {
+    if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT ) {
         fighter_jet->ChangeSpeed( 10, 0);
     }
 

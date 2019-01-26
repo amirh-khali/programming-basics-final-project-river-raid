@@ -25,36 +25,41 @@ void Map::Render(SDL_Renderer *renderer, Uint32 score) {
 
     //Make Lines
     for (int i = 0; i < 480; ++i) {
-
         //cout << score << ' ' << start_wall_break << ' ' << i << ' ' << i - (int)score + start_wall_break <<  ' ' << finish_wall_break << '\n';
         if (!broadway) {
             if ((int)score - i > finish_wall_break) {
                 SDL_RenderDrawLine(renderer, 0, i, (size_of_wall), i);
                 SDL_RenderDrawLine(renderer, 640 - (size_of_wall), i, 640, i);
+                //cout<<"1"<<i<<endl;
             }
             else if ((int)score - i > start_wall_break) {
                 //cout << ".\n";
                 SDL_RenderDrawLine(renderer, 0, i, (size_of_wall - 128 + (int)score - i - start_wall_break), i);
                 SDL_RenderDrawLine(renderer, 640 - (size_of_wall - 128 + (int)score - i - start_wall_break), i, 640, i);
+                //cout<<"T::"<<i<<endl;
             }
             else {
                 SDL_RenderDrawLine(renderer, 0, i, (size_of_wall - 128), i);
                 SDL_RenderDrawLine(renderer, 640 - (size_of_wall - 128), i, 640, i);
+                //cout<<"3"<<i<<endl;
             }
         }
         else {
             if ((int)score - i > finish_wall_break) {
                 SDL_RenderDrawLine(renderer, 0, i, (size_of_wall), i);
                 SDL_RenderDrawLine(renderer, 640 - (size_of_wall), i, 640, i);
+                //cout<<"1::"<<i<<endl;
             }
             else if ((int)score - i > start_wall_break) {
                 //cout << ".\n";
                 SDL_RenderDrawLine(renderer, 0, i, (size_of_wall + 128 - (int)score + i + start_wall_break), i);
                 SDL_RenderDrawLine(renderer, 640 - (size_of_wall + 128 - (int)score + i + start_wall_break), i, 640, i);
+                //cout<<"2::"<<i<<endl;
             }
             else {
                 SDL_RenderDrawLine(renderer, 0, i, (size_of_wall + 128), i);
                 SDL_RenderDrawLine(renderer, 640 - (size_of_wall + 128), i, 640, i);
+                //cout<<"N::"<<i<<endl;
             }
         }
     }

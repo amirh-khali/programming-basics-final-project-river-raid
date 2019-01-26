@@ -9,7 +9,7 @@ class Objects {
         Objects();
         ~Objects();
 
-        void Init(int x_pos = 0, int y_pos = 0);
+        void Init(int x_pos = 0, int y_pos = 0, int h = 32, int w = 32);
         void Render(SDL_Renderer *renderer, const char *path);
         void ChangeSpeed(int new_vx, int new_vy);
         void Update();
@@ -17,9 +17,9 @@ class Objects {
         //Object Location && Siz
         SDL_Rect des_rec;
 
-    protected:
-
         //speed
         int vx = 0, vy = 0; // + ^ >
+
+    protected:
 };
 #endif //OBJECTS_DEF_

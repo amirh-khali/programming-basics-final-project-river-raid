@@ -7,12 +7,16 @@ using namespace std;
 Game *main_game = nullptr;
 
 int main () {
+    srand(time(NULL));
+    
     main_game = new Game();
     main_game->Init();
 
     while (main_game->IsRunning()) {
 
         //cout << SDL_GetTicks() << '\n';
+
+        main_game->MakeEnemies();
 
         main_game->HandelEvents();
 
