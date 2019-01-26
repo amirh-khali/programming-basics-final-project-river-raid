@@ -51,8 +51,10 @@ void Game::Init() {
 //Update
 void Game::Update() {
 
-    score = SDL_GetTicks() / 30;
+    score = SDL_GetTicks() / (10);
     //cout << score << '\n';
+
+    //speed_booster = score / 1000;
 
     //FighterJet Update
     fighter_jet->Update();
@@ -71,17 +73,13 @@ void Game::Update() {
         shot->fired = 0;
     }
 
-    if (score == 10) {
+    //lvl update
+    if ((score / 600) > lvl) {
 
-        map->Update(score, 0);
+        map->Update(score, lvl % 2);
 
+        lvl++;
     }
-
-    if (score == 550) {
-
-        map->Update(score, 1);
-    }
-
 }
 
 

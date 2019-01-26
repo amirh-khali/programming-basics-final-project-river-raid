@@ -22,7 +22,7 @@ class Map {
 
         SDL_Texture *ground = NULL;
 
-        bool Broadway = 1;
+        bool broadway = 1;
         //int map[20][30];
 };
 

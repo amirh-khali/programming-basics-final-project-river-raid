@@ -43,6 +43,9 @@ class Game {
         Shot *shot = nullptr;
         Map *map = nullptr;
         Uint32 fps = 0;
+
+        int lvl = 0;
+        int speed_booster = 0;
 };
 
 #endif //GAME_DEF_
