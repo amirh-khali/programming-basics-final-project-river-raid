@@ -11,8 +11,7 @@ SDL_Color textColor = { 0, 0, 0, 255 };
 
 Mix_Chunk *shotSound = NULL;
 Mix_Chunk *explosionSound = NULL;
-
-
+Mix_Chunk *machineGunSound = NULL;
 
 void ScoreRender(SDL_Renderer* renderer, Uint32 score, TTF_Font *gFont, int high_score) {
 
@@ -99,6 +98,7 @@ void Game::Init() {
     Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 );
     shotSound = Mix_LoadWAV( "Resource/Sounds/bomb-04.wav" );
     explosionSound = Mix_LoadWAV( "Resource/Sounds/Explosion.wav" );
+    machineGunSound = Mix_LoadWAV( "Resource/Sounds/Machine+Gun+3.wav" );
 
 
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
@@ -243,6 +243,8 @@ void Game::Update() {
                         enemies[i]->shot->Init(enemies[i]->des_rec.x + 16, enemies[i]->des_rec.y + 16);
 
                         enemies[i]->shot->ChangeSpeed(0, 20);
+
+                        Mix_PlayChannel( -1, machineGunSound, 0 );
                     }
                 }
 
