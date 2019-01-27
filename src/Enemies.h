@@ -29,6 +29,10 @@ class Enemies : public Objects {
 
         Shot *shot = nullptr;
 
+        bool explos = 0;
+
+        int explos_time = 0;
+
     private:
         //tanker y 22 40
         //tanker x 0 64

@@ -9,6 +9,11 @@ using namespace std;
 
 SDL_Color textColor = { 0, 0, 0, 255 };
 
+Mix_Chunk *shotSound = NULL;
+Mix_Chunk *explosionSound = NULL;
+
+
+
 void ScoreRender(SDL_Renderer* renderer, Uint32 score, TTF_Font *gFont, int high_score) {
 
     std::stringstream timeText;
@@ -91,6 +96,11 @@ Game::Game(){}
 //Initialize
 void Game::Init() {
     TTF_Init();
+    Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 );
+    shotSound = Mix_LoadWAV( "Resource/Sounds/bomb-04.wav" );
+    explosionSound = Mix_LoadWAV( "Resource/Sounds/Explosion.wav" );
+
+
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
 
         //Create window
@@ -221,12 +231,12 @@ void Game::Update() {
 
                     enemies[i]->Update();
 
-                    if (enemies[i]->type != 2)
+                    if (enemies[i]->type != 2 || enemies[i]->explos == 1)
                         enemies[i]->ChangeSpeed(0, objects_speed);
                     else
                         enemies[i]->ChangeSpeed(10, objects_speed);
 
-                    if (enemies[i]->type == 3 && !enemies[i]->shot->Fired()) {
+                    if (enemies[i]->type == 3 && !enemies[i]->shot->Fired() && enemies[i]->explos == 0) {
 
                         enemies[i]->shot->fired = true;
 
@@ -238,6 +248,7 @@ void Game::Update() {
 
                 //delete out of screen enemies
                 if (enemies[i]->des_rec.y + enemies[i]->down > 280) {
+                        enemies[i]->shot->fired = 0;
                         enemies[i]->on_screen = 0;
                         enemies_num--;
                 }
@@ -255,6 +266,7 @@ void Game::Update() {
             //Kill
             if(shot->Fired() //Fired
             && enemies[i]->OnScreen() //enemies on screen
+            && enemies[i]->explos == 0 //naterekide bod
 
             //Overlap shot & enemies
             && shot->des_rec.y + 22 >= enemies[i]->des_rec.y + enemies[i]->up
@@ -264,7 +276,11 @@ void Game::Update() {
 
                 //Delete enemies
                 if (enemies[i]->type != 0) {
-                    enemies[i]->on_screen = 0;
+                    Mix_PlayChannel( -1, explosionSound, 0 );
+                    enemies[i]->explos = 1;
+                    enemies[i]->explos_time = SDL_GetTicks();
+                    enemies[i]->shot->fired = 0;
+                    //enemies[i]->on_screen = 0;
                     enemies_num--;
                 }
 
@@ -274,6 +290,7 @@ void Game::Update() {
 
             //Crash
             if( enemies[i]->OnScreen() //enemies on screen
+            && enemies[i]->explos == 0 //naterekide bod
 
             //Overlab FighterJet & enemies
             && fighter_jet->des_rec.y + 28 >= enemies[i]->des_rec.y + enemies[i]->up
@@ -361,17 +378,27 @@ void Game::Render() {
 
     for (int i = 0; i < 3; ++i) {
         if (enemies[i]->OnScreen()) {
-            if (enemies[i]->type == 3)
-                enemies[i]->Render(renderer, "Resource/tanker.png");
-            else if (enemies[i]->type == 2)
+            if (!enemies[i]->explos) {
+                if (enemies[i]->type == 3)
+                    enemies[i]->Render(renderer, "Resource/tanker.png");
+                else if (enemies[i]->type == 2)
                 enemies[i]->Render(renderer, "Resource/jet.png");
-            else if (enemies[i]->type == 1)
-                enemies[i]->Render(renderer, "Resource/helicopter.png");
-            else if (enemies[i]->type == 0)
-                enemies[i]->Render(renderer, "Resource/barrier.png");
+                else if (enemies[i]->type == 1)
+                    enemies[i]->Render(renderer, "Resource/helicopter.png");
+                else if (enemies[i]->type == 0)
+                    enemies[i]->Render(renderer, "Resource/barrier.png");
+            }
+            else {
+                enemies[i]->Render(renderer, "Resource/explosion.png");
+                if (SDL_GetTicks() - enemies[i]->explos_time >= 1000) {
+                    enemies[i]->on_screen = 0;
+                    enemies[i]->explos = 0;
+                }
+            }
             //cout << i << ' ' << enemies[i]->des_rec.x << ' ' << enemies[i]->des_rec.y << '\n';
         }
-        enemies[i]->shot->Render(renderer, "Resource/shot.png");
+        if (enemies[i]->shot->Fired())
+            enemies[i]->shot->Render(renderer, "Resource/shot.png");
     }
 
     //Score Render
@@ -403,6 +430,9 @@ void Game::HandelEvents() {
 
         //Fired
         shot->fired = true;
+
+        //Sound
+        Mix_PlayChannel( -1, shotSound, 0 );
 
         //located
         shot->Init(fighter_jet->des_rec.x, fighter_jet->des_rec.y);
