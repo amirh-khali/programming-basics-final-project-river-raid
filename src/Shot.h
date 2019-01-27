@@ -12,6 +12,8 @@ class Shot : public Objects {
 
         bool fired = 0;
     private:
+    //y 10 22
+    //x 14 18
 };
 
 #endif //SHOT_DEF_

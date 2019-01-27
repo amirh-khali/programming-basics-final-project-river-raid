@@ -12,7 +12,8 @@ class FighterJet : public Objects {
     void Shot();
 
     private:
-
+    //y 4 28
+    //x 2 30
 };
 
 #endif //FIGHTER_JET_DEF_

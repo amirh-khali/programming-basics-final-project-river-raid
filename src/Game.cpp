@@ -1,14 +1,96 @@
 #include "Game.h"
 #include <vector>
-
+#include <string>
+#include <cstring>
+#include <sstream>
+#include <stdio.h>
 
 using namespace std;
+
+SDL_Color textColor = { 0, 0, 0, 255 };
+
+void ScoreRender(SDL_Renderer* renderer, Uint32 score, TTF_Font *gFont) {
+
+    std::stringstream timeText;
+    timeText.str( "" );
+    timeText << "Score : " << score / 10;
+
+    //Load Surface
+    SDL_Surface *surface = TTF_RenderText_Solid( gFont, timeText.str().c_str(), textColor);
+
+    //GetError
+    if (surface == NULL) {
+        fprintf(stderr, "CreateRGBSurface failed: %s\n", SDL_GetError());
+    }
+
+    //Create Texture
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    //SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0xFF);
+
+    SDL_Rect des_rec;
+    des_rec.x = 128;
+    des_rec.y = 300;
+    des_rec.w = 256;
+    des_rec.h = 64;
+
+    //Copy To Renderer
+    //SDL_RenderCopy(renderer, texture, NULL, &des_rec);
+    SDL_RenderCopyEx( renderer, texture, NULL, &des_rec, 0.0, NULL, SDL_FLIP_NONE );
+
+    //Free Surface & Texture
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture( texture );
+}
+
+//Collision with the wall
+bool CollisionWithTheWall (FighterJet *fighter_jet, Map *map, Uint32 score) {
+    if ((int)score - fighter_jet->des_rec.y < map->start_wall_break) {
+        if (!map->broadway) {
+            if (fighter_jet->des_rec.x + 30 >= 640 - 128 || fighter_jet->des_rec.x + 2 <= 128) {
+                return true;
+            }
+        }
+        else {
+            if (fighter_jet->des_rec.x + 30 >= 640 - 256 || fighter_jet->des_rec.x + 2 <= 256) {
+                return true;
+            }
+        }
+    }
+    else if ((int)score - fighter_jet->des_rec.y < map->finish_wall_break) {
+        if (map->broadway) {
+            if (fighter_jet->des_rec.x + 30 >= 640 - (map->size_of_wall + 128 - (int)score + fighter_jet->des_rec.y + map->start_wall_break) || fighter_jet->des_rec.x + 2 <= (map->size_of_wall + 128 - (int)score + fighter_jet->des_rec.y + map->start_wall_break)) {
+                return true;
+            }
+        }
+        else {
+            if (fighter_jet->des_rec.x + 30 >= 640 - (map->size_of_wall - 128 + (int)score - fighter_jet->des_rec.y - map->start_wall_break) || fighter_jet->des_rec.x + 2 <= (map->size_of_wall - 128 + (int)score - fighter_jet->des_rec.y - map->start_wall_break)) {
+                return true;
+            }
+        }
+    }
+    else {
+        if (!map->broadway) {
+            if (fighter_jet->des_rec.x + 30 >= 640 - 256 || fighter_jet->des_rec.x + 2 <= 256) {
+                return true;
+            }
+        }
+        else {
+            if (fighter_jet->des_rec.x + 30 >= 640 - 128 || fighter_jet->des_rec.x + 2 <= 128) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 
 //Constructor
 Game::Game(){}
 
 //Initialize
 void Game::Init() {
+    TTF_Init();
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
 
         //Create window
@@ -28,13 +110,19 @@ void Game::Init() {
         fighter_jet = new FighterJet();
         fighter_jet->Init(288, 240);
 
+        //create shot
         shot = new Shot();
 
+        //create map
         map = new Map();
 
+        //create enemies
         for (int i = 0; i < 3; ++i) {
             enemies[i] = new Enemies();
+            enemies[i]->shot = new Shot();
         }
+
+        gFont = TTF_OpenFont( "Resource/Font/ATARCC__.TTF", 28 );
 
         //Is Running
         is_running = true;
@@ -49,151 +137,187 @@ void Game::Init() {
 //Enemies
 void Game::MakeEnemies() {
 
-    bool n_add_enemy;
-    n_add_enemy = rand() % 1000;
+        bool n_add_enemy;
+        n_add_enemy = rand() % 1000;
 
-    if (!n_add_enemy && enemies_num < 3) {
+        if (!n_add_enemy && enemies_num < 3) {
 
-        int type = rand() % 4;
-        enemies[last_enemy]->type = 3;
+            int type = rand() % 4;
+            if (type == 2 && score <= 100) {
+                type = 1;
+            }
 
-        enemies[last_enemy]->on_screen = 1;
+            int wall_size;
+            if (score >= map->start_wall_break && score <= map->finish_wall_break) {
+                wall_size = 256;
+            }
+            else {
+                wall_size = map->size_of_wall;
+            }
 
-        int wall_size;
-        if (score >= map->start_wall_break && score <= map->finish_wall_break) {
-            wall_size = 256;
+            if (type == 0 && wall_size == 256) {
+                type = 1;
+            }
+
+            enemies[last_enemy]->type = type;
+
+            enemies[last_enemy]->Calibrate();
+
+            enemies[last_enemy]->on_screen = 1;
+
+            int x_pos = rand() % (640 - 2 * wall_size - 106);
+            x_pos += wall_size + 26 ;
+
+            if (enemies[last_enemy]->type != 2)
+                enemies[last_enemy]->ChangeSpeed(0, 3);
+            else
+                enemies[last_enemy]->ChangeSpeed(10, 3);
+
+
+            if (enemies[last_enemy]->type == 0) {
+                enemies[last_enemy]->Init(x_pos, -enemies[last_enemy]->up, 32, 64);
+            } else if (enemies[last_enemy]->type == 1) {
+                enemies[last_enemy]->Init(x_pos, -enemies[last_enemy]->up, 32, 32);
+            } else if (enemies[last_enemy]->type == 2) {
+                enemies[last_enemy]->Init(0, -enemies[last_enemy]->up, 32, 32);
+            } else if (enemies[last_enemy]->type == 3) {
+                enemies[last_enemy]->Init(x_pos, -enemies[last_enemy]->up, 64, 64);
+            }
+            enemies_num++;
+
+            last_enemy++;
+            last_enemy %= 3;
         }
-        else {
-            wall_size = map->size_of_wall;
-        }
-        int x_pos = rand() % (640 - 2 * wall_size - 106);
-        x_pos += wall_size + 26 ;
-
-        enemies[last_enemy]->ChangeSpeed(0, 3);
-
-        enemies[last_enemy]->Init(x_pos, 0, 64, 64);
-        enemies_num++;
-
-        last_enemy++;
-        last_enemy %= 3;
-    }
 }
 
 
 //Update
 void Game::Update() {
 
-    score = SDL_GetTicks() / (10);
-    //cout << score << '\n';
+        score = SDL_GetTicks() / (10);
 
-    //speed_booster = score / 1000;
+        //FighterJet Update
+        fighter_jet->Update();
 
-    //FighterJet Update
-    fighter_jet->Update();
+        if (SDL_GetTicks() / 30 > fps) {
+            fps++;
 
-    //Shots Update
-    if (SDL_GetTicks() / 30 > fps) {
-        fps++;
+            //update shot
+            if (shot->Fired()) {
+                shot->Update();
+                shot->ChangeSpeed(0, -20);
+            }
 
-        if (shot->Fired()) {
-            shot->Update();
-            shot->ChangeSpeed(0, -20);
+            //Delete out of screen shot
+            if(shot->des_rec.y < 0)
+                shot->fired = 0;
+
+            for (int i = 0; i < 3; ++i) {
+
+                //update enemies
+                if (enemies[i]->OnScreen()) {
+
+                    enemies[i]->Update();
+
+                    if (enemies[i]->type != 2)
+                        enemies[i]->ChangeSpeed(0, 3);
+                    else
+                        enemies[i]->ChangeSpeed(10, 3);
+
+                    if (enemies[i]->type == 3 && !enemies[i]->shot->Fired()) {
+
+                        enemies[i]->shot->fired = true;
+
+                        enemies[i]->shot->Init(enemies[i]->des_rec.x + 16, enemies[i]->des_rec.y + 16);
+
+                        enemies[i]->shot->ChangeSpeed(0, 20);
+                    }
+                }
+
+                //delete out of screen enemies
+                if (enemies[i]->des_rec.y + enemies[i]->down > 280) {
+                        enemies[i]->on_screen = 0;
+                        enemies_num--;
+                }
+
+                if (enemies[i]->shot->Fired()) {
+                    enemies[i]->shot->Update();
+                    enemies[i]->shot->ChangeSpeed(0, 20);
+                }
+
+                //Delete out of screen shot
+                if(enemies[i]->shot->des_rec.y + 22 > 280)
+                    enemies[i]->shot->fired = 0;
+            }
         }
 
-        //Delete Exteras
-        if(shot->des_rec.y < 0)
-            shot->fired = 0;
-
+        //Strat The War
         for (int i = 0; i < 3; ++i) {
-            if (enemies[i]->OnScreen()) {
-                int vx, vy;
-                vx = enemies[i]->vx;
-                vx = enemies[i]->vy;
-
-                enemies[i]->Update();
-                enemies[i]->ChangeSpeed(0, 3);
-            }
-
-            if (enemies[i]->des_rec.y > 480) {
-                    enemies[i]->on_screen = 0;
-                    enemies_num--;
-            }
 
             //Kill
-            if(shot->Fired()
-            && enemies[i]->OnScreen()
-            && fighter_jet->des_rec.y > enemies[i]->des_rec.y + 40
-            && shot->des_rec.y <= (enemies[i]->des_rec.y + 32)
-            && shot->des_rec.x >= enemies[i]->des_rec.x
-            && shot->des_rec.x <=  enemies[i]->des_rec.x + 64) {
-                enemies[i]->on_screen = 0;
-                enemies_num--;
+            if(shot->Fired() //Fired
+            && enemies[i]->OnScreen() //enemies on screen
+
+            //Overlap shot & enemies
+            && shot->des_rec.y + 22 >= enemies[i]->des_rec.y + enemies[i]->up
+            && shot->des_rec.y + 10 <= enemies[i]->des_rec.y + enemies[i]->down
+            && shot->des_rec.x + 18 >= enemies[i]->des_rec.x + enemies[i]->left
+            && shot->des_rec.x + 14 <= enemies[i]->des_rec.x + enemies[i]->right) {
+
+                //Delete enemies
+                if (enemies[i]->type != 0) {
+                    enemies[i]->on_screen = 0;
+                    enemies_num--;
+                }
+
+                //unFired
                 shot->fired = 0;
             }
 
             //Crash
-            if( enemies[i]->OnScreen()
-            && fighter_jet->des_rec.y <= (enemies[i]->des_rec.y + 32)
-            && fighter_jet->des_rec.y + 32 >= (enemies[i]->des_rec.y)
-            && fighter_jet->des_rec.x + 32 >= enemies[i]->des_rec.x
-            && fighter_jet->des_rec.x <=  enemies[i]->des_rec.x + 64){
-                cout<<"boom"<<endl;
-                is_running = false;
-            }
-        }
-    }
-    //lvl update
-    if ((score / 600) > lvl) {
+            if( enemies[i]->OnScreen() //enemies on screen
 
-        //cout << score << '\n';
-        map->Update(score, lvl % 2);
+            //Overlab FighterJet & enemies
+            && fighter_jet->des_rec.y + 28 >= enemies[i]->des_rec.y + enemies[i]->up
+            && fighter_jet->des_rec.y + 4 <= enemies[i]->des_rec.y + enemies[i]->down
+            && fighter_jet->des_rec.x + 30 >= enemies[i]->des_rec.x + enemies[i]->left
+            && fighter_jet->des_rec.x + 2 <=  enemies[i]->des_rec.x + enemies[i]->right){
 
-        lvl++;
-    }
+                //stop Game
+                is_running = false;
+            }
 
-    if ((int)score - fighter_jet->des_rec.y < map->start_wall_break) {
-        if (!map->broadway) {
-            if (fighter_jet->des_rec.x + 32 >= 640 - 128 || fighter_jet->des_rec.x <= 128) {
+            //Sniper
+            if( enemies[i]->shot->Fired() //enemies on screen
+
+            //Overlab FighterJet & enemies
+            && fighter_jet->des_rec.y + 28 >= enemies[i]->shot->des_rec.y + 10
+            && fighter_jet->des_rec.y + 4 <= enemies[i]->shot->des_rec.y + 22
+            && fighter_jet->des_rec.x + 30 >= enemies[i]->shot->des_rec.x + 14
+            && fighter_jet->des_rec.x + 2 <=  enemies[i]->shot->des_rec.x + 18){
+
+                //stop Game
                 is_running = false;
-                cout << "1\n";
             }
+
+            //if (enemies[i]->OnScreen() && enemies[i]->type == 2 && enemies[i]->des_rec.x + 32 >= map->size_of_wall) {
+            //    enemies[i]->on_screen = 0;
+            //    enemies_num--;
+            //}
         }
-        else {
-            if (fighter_jet->des_rec.x + 32 >= 640 - 256 || fighter_jet->des_rec.x <= 256) {
-                is_running = false;
-                //cout << score << ' ' << fighter_jet->des_rec.y << ' ' << map->start_wall_break << '\n';
-                cout << "a::\n";
-            }
+
+        //lvl update
+        if ((score / 600) > lvl) {
+
+            map->Update(score, lvl % 2);
+
+            lvl++;
         }
-    }
-    else if ((int)score - fighter_jet->des_rec.y < map->finish_wall_break) {
-        if (map->broadway) {
-            if (fighter_jet->des_rec.x >= 640 - (map->size_of_wall + 128 - (int)score + fighter_jet->des_rec.y + map->start_wall_break) || fighter_jet->des_rec.x <= (map->size_of_wall + 128 - (int)score + fighter_jet->des_rec.y + map->start_wall_break)) {
-                is_running = false;
-                cout << "b::\n";
-            }
+
+        //crash with wall
+        if (CollisionWithTheWall(fighter_jet, map, score)) {
+            is_running = 0;
         }
-        else {
-            if (fighter_jet->des_rec.x >= 640 - (map->size_of_wall - 128 + (int)score - fighter_jet->des_rec.y - map->start_wall_break) || fighter_jet->des_rec.x <= (map->size_of_wall - 128 + (int)score - fighter_jet->des_rec.y - map->start_wall_break)) {
-                is_running = false;
-                cout << "c::\n";
-            }
-        }
-    }
-    else {
-        if (!map->broadway) {
-            if (fighter_jet->des_rec.x + 32 >= 640 - 256 || fighter_jet->des_rec.x <= 256) {
-                is_running = false;
-                cout << "3\n";
-            }
-        }
-        else {
-            if (fighter_jet->des_rec.x + 32 >= 640 - 128 || fighter_jet->des_rec.x <= 128) {
-                is_running = false;
-                cout << "4\n";
-            }
-        }
-    }
 }
 
 
@@ -221,10 +345,21 @@ void Game::Render() {
 
     for (int i = 0; i < 3; ++i) {
         if (enemies[i]->OnScreen()) {
-            enemies[i]->Render(renderer, "Resource/tanker.png");
+            if (enemies[i]->type == 3)
+                enemies[i]->Render(renderer, "Resource/tanker.png");
+            else if (enemies[i]->type == 2)
+                enemies[i]->Render(renderer, "Resource/jet.png");
+            else if (enemies[i]->type == 1)
+                enemies[i]->Render(renderer, "Resource/helicopter.png");
+            else if (enemies[i]->type == 0)
+                enemies[i]->Render(renderer, "Resource/barrier.png");
             //cout << i << ' ' << enemies[i]->des_rec.x << ' ' << enemies[i]->des_rec.y << '\n';
         }
+        enemies[i]->shot->Render(renderer, "Resource/shot.png");
     }
+
+    //Score Render
+    ScoreRender(renderer, score, gFont);
 
     //Present Renderer
     SDL_RenderPresent(renderer);
@@ -236,6 +371,9 @@ void Game::HandelEvents() {
     SDL_Event event;
     SDL_PollEvent(&event);
 
+    if (event.type == SDL_QUIT) {
+        is_running = 0;
+    }
 
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT ) {
         fighter_jet->ChangeSpeed( 10, 0);
@@ -254,7 +392,7 @@ void Game::HandelEvents() {
         shot->Init(fighter_jet->des_rec.x, fighter_jet->des_rec.y);
 
         //Change Shot speed
-        shot->ChangeSpeed(0, -30);
+        shot->ChangeSpeed(0, -20);
     }
 }
 

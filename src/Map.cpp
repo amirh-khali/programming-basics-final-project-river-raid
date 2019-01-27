@@ -63,4 +63,11 @@ void Map::Render(SDL_Renderer *renderer, Uint32 score) {
             }
         }
     }
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawLine(renderer, 0, 280, 640, 280);
+
+    SDL_SetRenderDrawColor(renderer, 109, 109, 111, SDL_ALPHA_OPAQUE);
+    for (int i = 281; i < 480; ++i) {
+        SDL_RenderDrawLine(renderer, 0, i, 640, i);
+    }
 }

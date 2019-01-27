@@ -8,6 +8,9 @@
 #include "Map.h"
 #include <ctime>
 #include <cstdlib>
+#include <string>
+#include <cstring>
+#include <sstream>
 
 
 using namespace std;
@@ -57,7 +60,8 @@ class Game {
         Uint32 fps = 0;
 
         int lvl = 0;
-        int speed_booster = 0;
+
+        TTF_Font *gFont = NULL;
 };
 
 #endif //GAME_DEF_

@@ -8,7 +8,7 @@ Game *main_game = nullptr;
 
 int main () {
     srand(time(NULL));
-    
+
     main_game = new Game();
     main_game->Init();
 
