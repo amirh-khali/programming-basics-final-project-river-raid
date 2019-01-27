@@ -9,11 +9,11 @@ using namespace std;
 
 SDL_Color textColor = { 0, 0, 0, 255 };
 
-void ScoreRender(SDL_Renderer* renderer, Uint32 score, TTF_Font *gFont) {
+void ScoreRender(SDL_Renderer* renderer, Uint32 score, TTF_Font *gFont, int high_score) {
 
     std::stringstream timeText;
     timeText.str( "" );
-    timeText << "Score : " << score / 10;
+    timeText << "High Score : " << high_score << "              Score : " << score / 10;
 
     //Load Surface
     SDL_Surface *surface = TTF_RenderText_Solid( gFont, timeText.str().c_str(), textColor);
@@ -29,9 +29,9 @@ void ScoreRender(SDL_Renderer* renderer, Uint32 score, TTF_Font *gFont) {
     //SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0xFF);
 
     SDL_Rect des_rec;
-    des_rec.x = 128;
+    des_rec.x = 20;
     des_rec.y = 300;
-    des_rec.w = 256;
+    des_rec.w = 600;
     des_rec.h = 64;
 
     //Copy To Renderer
@@ -143,7 +143,7 @@ void Game::MakeEnemies() {
         if (!n_add_enemy && enemies_num < 3) {
 
             int type = rand() % 4;
-            if (type == 2 && score <= 100) {
+            if (type == 2 && score / 10 < 100) {
                 type = 1;
             }
 
@@ -193,8 +193,10 @@ void Game::MakeEnemies() {
 
 //Update
 void Game::Update() {
-
-        score = SDL_GetTicks() / (10);
+        if (SDL_GetTicks() - last_get_ticket >= second_per_speed) {
+            score++;
+            last_get_ticket = SDL_GetTicks();
+        }
 
         //FighterJet Update
         fighter_jet->Update();
@@ -220,9 +222,9 @@ void Game::Update() {
                     enemies[i]->Update();
 
                     if (enemies[i]->type != 2)
-                        enemies[i]->ChangeSpeed(0, 3);
+                        enemies[i]->ChangeSpeed(0, objects_speed);
                     else
-                        enemies[i]->ChangeSpeed(10, 3);
+                        enemies[i]->ChangeSpeed(10, objects_speed);
 
                     if (enemies[i]->type == 3 && !enemies[i]->shot->Fired()) {
 
@@ -244,10 +246,6 @@ void Game::Update() {
                     enemies[i]->shot->Update();
                     enemies[i]->shot->ChangeSpeed(0, 20);
                 }
-
-                //Delete out of screen shot
-                if(enemies[i]->shot->des_rec.y + 22 > 280)
-                    enemies[i]->shot->fired = 0;
             }
         }
 
@@ -304,20 +302,38 @@ void Game::Update() {
             //    enemies[i]->on_screen = 0;
             //    enemies_num--;
             //}
+            //Delete out of screen shot
+            if(enemies[i]->shot->des_rec.y + 22 > 280)
+                enemies[i]->shot->fired = 0;
         }
 
         //lvl update
-        if ((score / 600) > lvl) {
+        if (score - lvl_score > 600) {
 
             map->Update(score, lvl % 2);
 
             lvl++;
+
+            lvl_score = score;
         }
 
         //crash with wall
         if (CollisionWithTheWall(fighter_jet, map, score)) {
             is_running = 0;
         }
+
+        if (score / 10 > 500) {//legendery
+            second_per_speed = 2;
+            objects_speed = 15;
+        }else if (score / 10 > 150) {//pro
+            second_per_speed = 5;
+            objects_speed = 6;
+        } else if (score / 10 > 50) {//nooooooob!!!!!
+            second_per_speed = 10;
+            objects_speed = 3;
+        }
+
+
 }
 
 
@@ -359,7 +375,7 @@ void Game::Render() {
     }
 
     //Score Render
-    ScoreRender(renderer, score, gFont);
+    ScoreRender(renderer, score, gFont, high_score);
 
     //Present Renderer
     SDL_RenderPresent(renderer);

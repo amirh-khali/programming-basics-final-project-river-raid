@@ -37,6 +37,10 @@ class Game {
 
         bool IsRunning();
 
+        Uint32 score = 0;
+
+        int high_score = 0;
+
     private:
         //Main Renderer
         SDL_Renderer *renderer = NULL;
@@ -46,8 +50,6 @@ class Game {
 
         //Running Pos
         bool is_running = false;
-
-        Uint32 score = 0;
 
         FighterJet *fighter_jet = nullptr;
         Shot *shot = nullptr;
@@ -62,6 +64,16 @@ class Game {
         int lvl = 0;
 
         TTF_Font *gFont = NULL;
+
+        int lvl_score = 0;
+
+        int speed_story = 400;
+
+        int last_get_ticket = 0;
+
+        int objects_speed = 1;
+
+        int second_per_speed = 30;
 };
 
 #endif //GAME_DEF_
